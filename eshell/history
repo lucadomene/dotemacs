@@ -1,0 +1,5 @@
+ls
+./test 
+fc-list
+fc-list | grep JetBrains
+ls
