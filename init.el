@@ -112,8 +112,12 @@
 ;; -----------------------------------------------------------------------------
 (use-package corfu
   :custom
-  (corfu-auto t)
+  (corfu-auto t)                 ; Enable auto-completion
+  (corfu-preselect 'prompt)      ; Don't pre-select the first candidate
   (corfu-quit-no-match t)
+  :bind
+  (:map corfu-map
+        ("RET" . nil))           ; Let Enter/RET behave normally (insert newline)
   :init
   (global-corfu-mode))
 
@@ -177,7 +181,39 @@
   )
 
 ;; -----------------------------------------------------------------------------
-;; 10. custom variables & faces
+;; 10. workflow, compilation & window management
+;; -----------------------------------------------------------------------------
+;; auto-save before compiling and scroll to the first error
+(setq compilation-ask-about-save nil
+      compilation-scroll-output 'first-error)
+
+;; handle colors in compilation output (ansi-color)
+(require 'ansi-color)
+(defun my-colorize-compilation-buffer ()
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region compilation-filter-start (point))))
+(add-hook 'compilation-filter-hook 'my-colorize-compilation-buffer)
+
+;; manage window placement (keep compilation/eshell at the bottom)
+(setq display-buffer-alist
+      '(("\\*compilation\\*"
+         (display-buffer-reuse-window display-buffer-at-bottom)
+         (window-height . 0.3))
+        ("\\*eshell\\*"
+         (display-buffer-reuse-window display-buffer-at-bottom)
+         (window-height . 0.3))
+        ("\\*Python\\*"
+         (display-buffer-reuse-window display-buffer-at-bottom)
+         (window-height . 0.3))))
+
+;; global shortcuts for the development loop
+(global-set-key (kbd "<f5>") 'recompile)
+(global-set-key (kbd "C-c c") 'compile)
+(global-set-key (kbd "C-c e") 'project-eshell)
+(global-set-key (kbd "C-c l a") 'eglot-code-actions) ; quick fixes!
+
+;; -----------------------------------------------------------------------------
+;; 11. custom variables & faces
 ;; -----------------------------------------------------------------------------
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
