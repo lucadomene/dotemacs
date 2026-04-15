@@ -56,9 +56,10 @@
 ;; -----------------------------------------------------------------------------
 ;; 4. editor behavior & visuals
 ;; -----------------------------------------------------------------------------
-;; highlight current line and show numbers
+;; highlight current line, show numbers, and auto-pair parentheses
 (global-hl-line-mode 1)
 (global-display-line-numbers-mode 1)
+(electric-pair-mode 1)
 
 ;; disable line numbers in specific modes
 (dolist (mode '(eshell-mode-hook
@@ -72,6 +73,11 @@
 ;; -----------------------------------------------------------------------------
 ;; 5. editing enhancements
 ;; -----------------------------------------------------------------------------
+(use-package which-key
+  :ensure nil
+  :config
+  (which-key-mode))
+
 (use-package multiple-cursors
   :bind (("C-S-c C-S-c" . mc/edit-lines)
          ("C->" . mc/mark-next-like-this)
@@ -79,7 +85,14 @@
          ("C-c C-<" . mc/mark-all-like-this)))
 
 ;; -----------------------------------------------------------------------------
-;; 6. navigation & project management
+;; 6. version control
+;; -----------------------------------------------------------------------------
+(use-package magit
+  :bind (("C-x g" . magit-status)
+         ("C-c g" . magit-status)))
+
+;; -----------------------------------------------------------------------------
+;; 7. navigation & project management
 ;; -----------------------------------------------------------------------------
 (use-package vertico
   :init
@@ -102,13 +115,14 @@
   (setq dashboard-center-content t
         dashboard-startup-banner 'official
         dashboard-projects-backend 'project-el
+        dashboard-projects-switch-function 'dired
         dashboard-display-icons-p t
         dashboard-icon-type 'nerd-icons
         dashboard-items '((recents  . 5)
                           (projects . 5))))
 
 ;; -----------------------------------------------------------------------------
-;; 7. completion system
+;; 8. completion system
 ;; -----------------------------------------------------------------------------
 (use-package corfu
   :custom
@@ -134,7 +148,7 @@
   (add-hook 'eglot-managed-mode-hook #'my-merge-eglot-with-basics))
 
 ;; -----------------------------------------------------------------------------
-;; 8. programming & lsp (eglot)
+;; 9. programming & lsp (eglot)
 ;; -----------------------------------------------------------------------------
 (use-package eglot
   :ensure nil
@@ -157,7 +171,7 @@
   (python-indent-offset 4))
 
 ;; -----------------------------------------------------------------------------
-;; 9. advanced syntax highlighting (tree-sitter - disabled)
+;; 10. advanced syntax highlighting (tree-sitter - disabled)
 ;; -----------------------------------------------------------------------------
 ;; Tree-sitter is currently disabled due to Emacs 30.2 grammar compatibility issues.
 (use-package treesit
@@ -181,7 +195,7 @@
   )
 
 ;; -----------------------------------------------------------------------------
-;; 10. workflow, compilation & window management
+;; 11. workflow, compilation & window management
 ;; -----------------------------------------------------------------------------
 ;; auto-save before compiling and scroll to the first error
 (setq compilation-ask-about-save nil
@@ -213,7 +227,19 @@
 (global-set-key (kbd "C-c l a") 'eglot-code-actions) ; quick fixes!
 
 ;; -----------------------------------------------------------------------------
-;; 11. custom variables & faces
+;; 12. document processing & markdown
+;; -----------------------------------------------------------------------------
+(use-package markdown-mode
+  :mode ("\\.md\\'" . markdown-mode)
+  :init (setq markdown-command "markdown")
+  :config
+  (setq markdown-fontify-code-blocks-natively t))
+
+(use-package markdown-toc
+  :hook (markdown-mode . markdown-toc-mode))
+
+;; -----------------------------------------------------------------------------
+;; 13. custom variables & faces
 ;; -----------------------------------------------------------------------------
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

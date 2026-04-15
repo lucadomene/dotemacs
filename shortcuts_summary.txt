@@ -1,0 +1,31 @@
+# Emacs Configured Shortcuts Summary
+
+## 1. Development & Compilation
+- <f5>          : Recompile (runs the last compile command)
+- C-c c         : Compile (prompts for a command)
+- C-c e         : Project Eshell (opens eshell in project root)
+
+## 2. LSP & Programming (Eglot)
+- C-c l a       : Eglot Code Actions (quick fixes)
+- C-c l r       : Eglot Rename (rename symbol at point)
+- C-c l f       : Eglot Format (format buffer/region)
+
+## 3. Version Control (Magit)
+- C-x g         : Magit Status
+- C-c g         : Magit Status (alternative shortcut)
+
+## 4. Editing Enhancements (Multiple Cursors)
+- C-S-c C-S-c   : Edit Lines (with multiple cursors)
+- C->           : Mark Next Like This
+- C-<           : Mark Previous Like This
+- C-c C-<       : Mark All Like This
+
+## 5. Navigation & UI
+- Which-key is enabled (automatic help for key sequences)
+- Vertico is enabled (enhanced minibuffer completion)
+- Corfu is enabled (inline auto-completion)
+- Dashboard is set as the startup screen
+
+## 6. Markdown Support
+- .md files automatically open in markdown-mode
+- markdown-toc-mode is enabled (hooks into markdown-mode)

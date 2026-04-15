@@ -1,0 +1,16 @@
+./test
+./test
+./test
+gcc -g -o test test.c
+gcc -g -s test.c
+gcc -g -S test.c
+gcc -g -a test.c
+gcc --help
+clear
+clear
+./test
+clear
+./test
+./test
+./test
+exit
