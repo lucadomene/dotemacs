@@ -155,6 +155,7 @@
   :hook ((c-mode . eglot-ensure)
          (c++-mode . eglot-ensure)
          (python-mode . eglot-ensure)
+         (rust-mode . eglot-ensure)
          (cmake-mode . eglot-ensure))
   :bind (:map eglot-mode-map
               ("C-c l r" . eglot-rename)
@@ -162,6 +163,10 @@
   :config
   (add-to-list 'eglot-server-programs
                '((cmake-mode) . ("neocmakelsp" "stdio"))))
+
+(use-package rust-mode
+  :init
+  (setq rust-format-on-save t))
 
 (use-package cmake-mode)
 
