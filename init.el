@@ -201,6 +201,47 @@
 (setq compilation-ask-about-save nil
       compilation-scroll-output 'first-error)
 
+;; Set default C/C++ compilation command
+(defun my-c-cpp-compile-setup ()
+  "Set default `compile-command' for C/C++ buffers."
+  (when (and buffer-file-name
+             (not (or (file-exists-p "Makefile")
+                      (file-exists-p "makefile"))))
+    (let* ((file (file-name-nondirectory buffer-file-name))
+           (out (file-name-sans-extension file))
+           (compiler (if (derived-mode-p 'c++-mode) "clang++" "clang")))
+      (setq-local compile-command (format "%s -o %s %s" compiler out file)))))
+
+(add-hook 'c-mode-hook #'my-c-cpp-compile-setup)
+(add-hook 'c++-mode-hook #'my-c-cpp-compile-setup)
+
+;; Variable to track the source file associated with a run buffer
+(defvar-local my-run-source-file nil
+  "Path to the source file associated with this buffer.")
+
+(defun my-run-c-cpp-executable ()
+  "Run or restart the C/C++ executable associated with the current buffer."
+  (interactive)
+  (let* ((source (or buffer-file-name my-run-source-file))
+         (exe (if source (file-name-sans-extension source) nil)))
+    (if (and exe (file-executable-p exe))
+        (let* ((exe-name (file-name-nondirectory exe))
+               (buf-name (format "*Run: %s*" exe-name))
+               (buf (get-buffer-create buf-name)))
+          ;; Setup the run buffer
+          (with-current-buffer buf
+            (let ((proc (get-buffer-process buf)))
+              (when proc (delete-process proc)) ; Kill existing process
+              (setq inhibit-read-only t)
+              (erase-buffer)
+              (setq-local my-run-source-file source)
+              (make-comint-in-buffer exe-name buf (concat "./" exe-name))))
+          ;; Display and focus
+          (let ((window (display-buffer buf)))
+            (when window (select-window window))))
+      (message "Executable for %s not found. Compile first (C-c c)?" 
+               (if source (file-name-nondirectory source) "this buffer")))))
+
 ;; handle colors in compilation output (ansi-color)
 (require 'ansi-color)
 (defun my-colorize-compilation-buffer ()
@@ -208,9 +249,12 @@
     (ansi-color-apply-on-region compilation-filter-start (point))))
 (add-hook 'compilation-filter-hook 'my-colorize-compilation-buffer)
 
-;; manage window placement (keep compilation/eshell at the bottom)
+;; manage window placement (keep compilation/run/eshell at the bottom)
 (setq display-buffer-alist
       '(("\\*compilation\\*"
+         (display-buffer-reuse-window display-buffer-at-bottom)
+         (window-height . 0.3))
+        ("\\*Run: .*\\*"
          (display-buffer-reuse-window display-buffer-at-bottom)
          (window-height . 0.3))
         ("\\*eshell\\*"
@@ -223,6 +267,7 @@
 ;; global shortcuts for the development loop
 (global-set-key (kbd "<f5>") 'recompile)
 (global-set-key (kbd "C-c c") 'compile)
+(global-set-key (kbd "C-c r") 'my-run-c-cpp-executable)
 (global-set-key (kbd "C-c e") 'project-eshell)
 (global-set-key (kbd "C-c l a") 'eglot-code-actions) ; quick fixes!
 

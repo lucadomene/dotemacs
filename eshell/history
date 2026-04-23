@@ -14,3 +14,11 @@ clear
 ./test
 ./test
 exit
+./preprocessor 
+./preprocessor
+./fast_least 
+./fast_least 
+./test
+./fast_least 
+./floats 
+./boolean
